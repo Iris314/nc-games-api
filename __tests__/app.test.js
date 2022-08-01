@@ -1,7 +1,5 @@
 const request = require("supertest");
 const app = require("../app");
-const db = require("../db/connection");
-const categories = require("../db/data/development-data/categories");
 const seedDB = require("../db/seeds/run-seed");
 
 beforeEach(() => {
@@ -14,7 +12,7 @@ describe("/api/non-existing-route", () => {
       .get("/api/non-existing-route")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("not found");
+        expect(body.msg).toBe("URL path not found");
       });
   });
 });
@@ -35,10 +33,14 @@ describe("/api/categories", () => {
         .get("/api/categories")
         .expect(200)
         .then(({ body }) => {
-          expect(Object.keys(body.categories[0])).toEqual([
-            "slug",
-            "description",
-          ]);
+          const mappedCategories = [];
+          body.categories.map((category) => {
+            mappedCategories.push({
+              slug: category.slug,
+              description: category.description,
+            });
+          });
+          expect(body.categories).toEqual(mappedCategories);
         });
     });
   });
