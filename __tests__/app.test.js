@@ -3,6 +3,7 @@ const app = require("../app");
 const seedDB = require("../db/seeds/seed");
 const data = require("../db/data/test-data");
 const db = require("../db/connection");
+const { string } = require("pg-format");
 
 beforeEach(() => {
   return seedDB(data);
@@ -39,14 +40,10 @@ describe("/api/categories", () => {
         .get("/api/categories")
         .expect(200)
         .then(({ body }) => {
-          const mappedCategories = [];
-          body.categories.map((category) => {
-            mappedCategories.push({
-              slug: category.slug,
-              description: category.description,
-            });
+          console.log(body.categories);
+          body.categories.forEach((category) => {
+            expect(category).toHaveProperty(("slug", "description"));
           });
-          expect(body.categories).toEqual(mappedCategories);
         });
     });
   });
