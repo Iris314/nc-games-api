@@ -166,3 +166,42 @@ describe("/api/reviews/:review_id", () => {
     });
   });
 });
+
+describe("/api/reviews/:review_id", () => {
+  test("existing review id results in status 200 - responds with the correct review object", () => {
+    const expected = {
+      title: "Agricola",
+      designer: "Uwe Rosenberg",
+      owner: "mallionaire",
+      review_img_url:
+        "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+      review_body: "Farmyard fun!",
+      review_id: 1,
+      category: "euro game",
+      created_at: "2021-01-18T10:00:20.514Z",
+      votes: 1,
+    };
+    return request(app)
+      .get("/api/reviews/1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.review).toEqual(expected);
+      });
+  });
+  test("non-existing review id results in status 404 - msg 'review not found", () => {
+    return request(app)
+      .get("/api/reviews/1000")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("review not found");
+      });
+  });
+  test("non-numeric review id results in status 400 - msg 'invalid request", () => {
+    return request(app)
+      .get("/api/reviews/review1")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("bad request");
+      });
+  });
+});

@@ -33,4 +33,3 @@ exports.changeReviewById = (reviewId, votes) => {
       .query(`SELECT * FROM reviews WHERE review_id = $1;`, [reviewId])
       .then(({ rows }) => rows[0]);
   }
-};
