@@ -8,7 +8,7 @@ This database will be PSQL, and interaction happens using [node-postgres](https:
 
 ## Instructions
 
-To run the prject locally, please create `.env.test` and `.env.development` files in the main folder. The module [dotenv](https://github.com/motdotla/dotenv#readme) can be used to load these into the `process.env` global object by using the following text with the corresponding database names inserted in each file.
+To run the project locally, please create `.env.test` and `.env.development` files in the main folder. The module [dotenv](https://github.com/motdotla/dotenv#readme) can be used to load these into the `process.env` global object by using the following text with the corresponding database names inserted in each file.
 
 ```
 PGDATABASE=insert_database_name_here
