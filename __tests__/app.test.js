@@ -51,19 +51,20 @@ describe("/api/reviews/:review_id", () => {
   describe("GET", () => {
     test("existing review id results in status 200 - responds with the correct review object", () => {
       const expected = {
-        title: "Agricola",
-        designer: "Uwe Rosenberg",
-        owner: "mallionaire",
+        title: "Jenga",
+        designer: "Leslie Scott",
+        owner: "philippaclaire9",
         review_img_url:
           "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
-        review_body: "Farmyard fun!",
-        review_id: 1,
-        category: "euro game",
-        created_at: "2021-01-18T10:00:20.514Z",
-        votes: 1,
+        review_body: "Fiddly fun for all the family",
+        category: "dexterity",
+        created_at: "2021-01-18T10:01:41.251Z",
+        votes: 5,
+        comment_count: "3",
+        review_id: 2,
       };
       return request(app)
-        .get("/api/reviews/1")
+        .get("/api/reviews/2")
         .expect(200)
         .then(({ body }) => {
           expect(body.review).toEqual(expected);
@@ -167,41 +168,22 @@ describe("/api/reviews/:review_id", () => {
   });
 });
 
-describe("/api/reviews/:review_id", () => {
-  test("existing review id results in status 200 - responds with the correct review object", () => {
-    const expected = {
-      title: "Agricola",
-      designer: "Uwe Rosenberg",
-      owner: "mallionaire",
-      review_img_url:
-        "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
-      review_body: "Farmyard fun!",
-      review_id: 1,
-      category: "euro game",
-      created_at: "2021-01-18T10:00:20.514Z",
-      votes: 1,
-    };
+describe("/api/users", () => {
+  test("GET /api/users", () => {
     return request(app)
-      .get("/api/reviews/1")
+      .get("/api/users")
       .expect(200)
-      .then(({ body }) => {
-        expect(body.review).toEqual(expected);
-      });
-  });
-  test("non-existing review id results in status 404 - msg 'review not found", () => {
-    return request(app)
-      .get("/api/reviews/1000")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toEqual("review not found");
-      });
-  });
-  test("non-numeric review id results in status 400 - msg 'invalid request", () => {
-    return request(app)
-      .get("/api/reviews/review1")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toEqual("bad request");
+      .then(({ body: { users } }) => {
+        expect(users.length).toBe(4);
+        users.forEach((user) => {
+          expect(user).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            })
+          );
+        });
       });
   });
 });
