@@ -33,6 +33,17 @@ exports.selectReviewById = (reviewId) => {
     });
 };
 
+exports.selectCommentsByReviewId = (reviewId) => {
+  return db
+    .query(`SELECT * FROM comments WHERE review_id = $1`, [reviewId])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ code: 404, msg: "review not found" });
+      }
+      return rows;
+    });
+};
+
 exports.changeReviewById = (reviewId, votes) => {
   if (votes) {
     return db
