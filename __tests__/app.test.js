@@ -39,10 +39,129 @@ describe("/api/categories", () => {
         .get("/api/categories")
         .expect(200)
         .then(({ body }) => {
-          console.log(body.categories);
           body.categories.forEach((category) => {
             expect(category).toHaveProperty(("slug", "description"));
           });
+        });
+    });
+  });
+});
+
+describe("/api/reviews/:review_id", () => {
+  describe("GET", () => {
+    test("existing review id results in status 200 - responds with the correct review object", () => {
+      const expected = {
+        title: "Agricola",
+        designer: "Uwe Rosenberg",
+        owner: "mallionaire",
+        review_img_url:
+          "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+        review_body: "Farmyard fun!",
+        review_id: 1,
+        category: "euro game",
+        created_at: "2021-01-18T10:00:20.514Z",
+        votes: 1,
+      };
+      return request(app)
+        .get("/api/reviews/1")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.review).toEqual(expected);
+        });
+    });
+    test("non-existing review id results in status 404 - msg 'review not found", () => {
+      return request(app)
+        .get("/api/reviews/1000")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("review not found");
+        });
+    });
+    test("non-numeric review id results in status 400 - msg 'bad request", () => {
+      return request(app)
+        .get("/api/reviews/review1")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("bad request");
+        });
+    });
+  });
+  describe("PATCH", () => {
+    const update = {
+      inc_votes: 4,
+    };
+    test("existing review id results in status 200 - responds with the updated correct review object", () => {
+      const expected = {
+        title: "Agricola",
+        designer: "Uwe Rosenberg",
+        owner: "mallionaire",
+        review_img_url:
+          "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+        review_body: "Farmyard fun!",
+        review_id: 1,
+        category: "euro game",
+        created_at: "2021-01-18T10:00:20.514Z",
+        votes: 5,
+      };
+      return request(app)
+        .patch("/api/reviews/1")
+        .send(update)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.review).toEqual(expected);
+        });
+    });
+    test("non-existing review id results in status 404 - msg 'review not found", () => {
+      return request(app)
+        .patch("/api/reviews/1000")
+        .send(update)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("review not found");
+        });
+    });
+    test("non-numeric review id results in status 400 - msg 'bad request", () => {
+      return request(app)
+        .patch("/api/reviews/review1")
+        .send(update)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("bad request");
+        });
+    });
+    test("non-numeric vote results in status 400 - msg 'bad request", () => {
+      const wrongUpdate1 = {
+        inc_votes: "invalid",
+      };
+      return request(app)
+        .patch("/api/reviews/1")
+        .send(wrongUpdate1)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("bad request");
+        });
+    });
+    test("invalid request key results in status 200 - unchanged object", () => {
+      const wrongUpdate2 = {
+        invalid: 4,
+      };
+      return request(app)
+        .patch("/api/reviews/1")
+        .send(wrongUpdate2)
+        .expect(200)
+        .then(({ body: { review } }) => {
+          expect(review).toHaveProperty(
+            ("title",
+            "designer",
+            "owner",
+            "review_img_url",
+            "review_body",
+            "review_id",
+            "category",
+            "created_at",
+            "votes")
+          );
+          expect(review.votes).toEqual(1);
         });
     });
   });
