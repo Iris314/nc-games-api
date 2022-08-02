@@ -188,19 +188,25 @@ describe("/api/users", () => {
   });
 });
 
-describe("/api/users", () => {
-  test("GET /api/users", () => {
+describe("/api/reviews", () => {
+  test("GET /api/reviews results in status 200 with array of review objects", () => {
     return request(app)
-      .get("/api/users")
+      .get("/api/reviews")
       .expect(200)
-      .then(({ body: { users } }) => {
-        expect(users.length).toBe(4);
-        users.forEach((user) => {
-          expect(user).toEqual(
+      .then(({ body: { reviews } }) => {
+        expect(reviews.length).toBe(13);
+        reviews.forEach((review) => {
+          expect(review).toEqual(
             expect.objectContaining({
-              username: expect.any(String),
-              name: expect.any(String),
-              avatar_url: expect.any(String),
+              owner: expect.any(String),
+              title: expect.any(String),
+              review_id: expect.any(Number),
+              category: expect.any(String),
+              review_img_url: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              designer: expect.any(String),
+              comment_count: expect.any(String),
             })
           );
         });
