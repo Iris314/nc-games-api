@@ -4,6 +4,17 @@ exports.selectCategories = () => {
   return db.query("SELECT * FROM categories;").then(({ rows }) => rows);
 };
 
+exports.selectReviews = () => {
+  return db
+    .query(
+      `SELECT title, reviews.review_id, review_img_url, reviews.votes, category, reviews.owner, reviews.created_at, designer,
+      COUNT(comment_id) AS comment_count FROM reviews 
+      LEFT JOIN comments ON comments.review_id = reviews.review_id
+      GROUP BY reviews.review_id`
+    )
+    .then(({ rows }) => rows);
+};
+
 exports.selectReviewById = (reviewId) => {
   return db
     .query(
@@ -19,6 +30,17 @@ exports.selectReviewById = (reviewId) => {
         return Promise.reject({ code: 404, msg: "review not found" });
       }
       return rows[0];
+    });
+};
+
+exports.selectCommentsByReviewId = (reviewId) => {
+  return db
+    .query(`SELECT * FROM comments WHERE review_id = $1`, [reviewId])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ code: 404, msg: "review not found" });
+      }
+      return rows;
     });
 };
 
