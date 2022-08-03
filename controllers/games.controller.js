@@ -14,9 +14,15 @@ exports.getCategories = (req, res) => {
 };
 
 exports.getReviews = (req, res, next) => {
-  selectReviews().then((reviews) => {
-    res.status(200).send({ reviews });
-  });
+  const sortBy = req.query.sort_by;
+  const order = req.query.order;
+  const category = req.query.category;
+
+  selectReviews(sortBy, order, category)
+    .then((reviews) => {
+      res.status(200).send({ reviews });
+    })
+    .catch(next);
 };
 
 exports.getReviewById = (req, res, next) => {
