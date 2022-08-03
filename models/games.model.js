@@ -78,6 +78,13 @@ exports.addReviewCommentById = (review_id, comment) => {
           )
           .then(({ rows }) => {
             return rows[0];
+          })
+          .catch((err) => {
+            if (err.code === "23503") {
+              return Promise.reject({ code: 400, msg: "invalid username" });
+            } else if (err.code === "23502") {
+              return Promise.reject({ code: 400, msg: "bad request" });
+            } else next(err);
           });
       }
     });
