@@ -17,8 +17,8 @@ describe("/api/non-existing-route", () => {
     return request(app)
       .get("/api/non-existing-route")
       .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("URL path not found");
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("URL path not found");
       });
   });
 });
@@ -38,8 +38,8 @@ describe("/api/categories", () => {
       return request(app)
         .get("/api/categories")
         .expect(200)
-        .then(({ body }) => {
-          body.categories.forEach((category) => {
+        .then(({ body: { categories } }) => {
+          categories.forEach((category) => {
             expect(category).toHaveProperty(("slug", "description"));
           });
         });
@@ -88,7 +88,7 @@ describe("/api/reviews", () => {
           expect(reviews).toBeSorted({ descending: false });
         });
     });
-    test("reviews are by orderd by date by default", () => {
+    test("reviews are by ordered by date by default", () => {
       return request(app)
         .get("/api/reviews")
         .expect(200)
@@ -147,16 +147,24 @@ describe("/api/reviews", () => {
       return request(app)
         .get("/api/reviews?sort_by=invalid")
         .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("bad request");
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("bad request");
         });
     });
-    test("invalid category results in code 404 - msg: category not found", () => {
+    test("invalid category results in code 404 - msg: reviews not found", () => {
       return request(app)
         .get("/api/reviews?category=invalid")
         .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe("category not found");
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("reviews not found");
+        });
+    });
+    test("a valid category with no associated reviews results in 404- msg: reviews not found ", () => {
+      return request(app)
+        .get("/api/reviews?category=children%27s%20games")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("reviews not found");
         });
     });
   });
@@ -181,24 +189,24 @@ describe("/api/reviews/:review_id", () => {
       return request(app)
         .get("/api/reviews/2")
         .expect(200)
-        .then(({ body }) => {
-          expect(body.review).toEqual(expected);
+        .then(({ body: { review } }) => {
+          expect(review).toEqual(expected);
         });
     });
     test("non-existing review id results in status 404 - msg 'review not found", () => {
       return request(app)
         .get("/api/reviews/1000")
         .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toEqual("review not found");
+        .then(({ body: { msg } }) => {
+          expect(msg).toEqual("review not found");
         });
     });
     test("non-numeric review id results in status 400 - msg 'bad request", () => {
       return request(app)
         .get("/api/reviews/review1")
         .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toEqual("bad request");
+        .then(({ body: { msg } }) => {
+          expect(msg).toEqual("bad request");
         });
     });
   });
@@ -223,8 +231,8 @@ describe("/api/reviews/:review_id", () => {
         .patch("/api/reviews/1")
         .send(update)
         .expect(200)
-        .then(({ body }) => {
-          expect(body.review).toEqual(expected);
+        .then(({ body: { review } }) => {
+          expect(review).toEqual(expected);
         });
     });
     test("non-existing review id results in status 404 - msg 'review not found", () => {
@@ -232,8 +240,8 @@ describe("/api/reviews/:review_id", () => {
         .patch("/api/reviews/1000")
         .send(update)
         .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toEqual("review not found");
+        .then(({ body: { msg } }) => {
+          expect(msg).toEqual("review not found");
         });
     });
     test("non-numeric review id results in status 400 - msg 'bad request", () => {
@@ -241,8 +249,8 @@ describe("/api/reviews/:review_id", () => {
         .patch("/api/reviews/review1")
         .send(update)
         .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toEqual("bad request");
+        .then(({ body: { msg } }) => {
+          expect(msg).toEqual("bad request");
         });
     });
     test("non-numeric vote results in status 400 - msg 'bad request", () => {
@@ -253,8 +261,8 @@ describe("/api/reviews/:review_id", () => {
         .patch("/api/reviews/1")
         .send(wrongUpdate1)
         .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toEqual("bad request");
+        .then(({ body: { msg } }) => {
+          expect(msg).toEqual("bad request");
         });
     });
     test("invalid request key results in status 200 - unchanged object", () => {
@@ -309,16 +317,16 @@ describe("/api/reviews/:review_id/comments", () => {
       return request(app)
         .get("/api/reviews/1000/comments")
         .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toEqual("review not found");
+        .then(({ body: { msg } }) => {
+          expect(msg).toEqual("review not found");
         });
     });
     test("non-numeric review id results in status 400 - msg 'bad request", () => {
       return request(app)
         .get("/api/reviews/review1/comments")
         .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toEqual("bad request");
+        .then(({ body: { msg } }) => {
+          expect(msg).toEqual("bad request");
         });
     });
   });
@@ -340,8 +348,8 @@ describe("/api/reviews/:review_id/comments", () => {
         .post("/api/reviews/2/comments")
         .send(comment)
         .expect(200)
-        .then(({ body }) => {
-          expect(body.comment).toEqual(returnedComment);
+        .then(({ body: { comment } }) => {
+          expect(comment).toEqual(returnedComment);
         });
     });
     test("POST /api/reviews/:review_id/comments stores the new comment", () => {
@@ -362,8 +370,8 @@ describe("/api/reviews/:review_id/comments", () => {
           .post("/api/reviews/1000/comments")
           .send(comment)
           .expect(404)
-          .then(({ body }) => {
-            expect(body.msg).toEqual("review not found");
+          .then(({ body: { msg } }) => {
+            expect(msg).toEqual("review not found");
           });
       });
       test("non-numeric review id results in status 400 - msg 'bad request", () => {
@@ -371,8 +379,8 @@ describe("/api/reviews/:review_id/comments", () => {
           .post("/api/reviews/review1/comments")
           .send(comment)
           .expect(400)
-          .then(({ body }) => {
-            expect(body.msg).toEqual("bad request");
+          .then(({ body: { msg } }) => {
+            expect(msg).toEqual("bad request");
           });
       });
       test('invalid post username results in status 400 - msg "invalid username"', () => {
@@ -384,8 +392,8 @@ describe("/api/reviews/:review_id/comments", () => {
           .post("/api/reviews/2/comments")
           .send(invalidComment)
           .expect(400)
-          .then(({ body }) => {
-            expect(body.msg).toEqual("invalid username");
+          .then(({ body: { msg } }) => {
+            expect(msg).toEqual("invalid username");
           });
       });
       test('invalid post body results in status 400 - msg "bad request"', () => {
@@ -397,8 +405,8 @@ describe("/api/reviews/:review_id/comments", () => {
           .post("/api/reviews/2/comments")
           .send(invalidComment)
           .expect(400)
-          .then(({ body }) => {
-            expect(body.msg).toEqual("bad request");
+          .then(({ body: { msg } }) => {
+            expect(msg).toEqual("bad request");
           });
       });
       test('empty post object results in status 400 - msg "bad request"', () => {
@@ -407,45 +415,10 @@ describe("/api/reviews/:review_id/comments", () => {
           .post("/api/reviews/2/comments")
           .send(invalidComment)
           .expect(400)
-          .then(({ body }) => {
-            expect(body.msg).toEqual("bad request");
+          .then(({ body: { msg } }) => {
+            expect(msg).toEqual("bad request");
           });
       });
-    });
-  });
-});
-
-describe("/api/comments/:comment_id", () => {
-  describe("DELETE ", () => {
-    test("returns status 200 with empty response body", () => {
-      return request(app)
-        .delete("/api/comments/1")
-        .expect(200)
-        .then(({ body }) => expect(body).toEqual({}));
-    });
-    test("deletes the comment from the review", () => {
-      return request(app)
-        .delete("/api/comments/1")
-        .then(() => {
-          return request(app)
-            .get("/api/reviews/2")
-            .expect(200)
-            .then(({ body: { review } }) =>
-              expect(review.comment_count).toBe("2")
-            );
-        });
-    });
-    test("returns status 404 with msg comment not found for non existing comment", () => {
-      return request(app)
-        .delete("/api/comments/1000")
-        .expect(404)
-        .then(({ body }) => expect(body.msg).toBe("comment not found"));
-    });
-    test("returns status 400 with msg bad request for invalid comment id", () => {
-      return request(app)
-        .delete("/api/comments/invalid")
-        .expect(400)
-        .then(({ body }) => expect(body.msg).toBe("bad request"));
     });
   });
 });

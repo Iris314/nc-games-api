@@ -30,7 +30,7 @@ exports.selectReviews = (sortBy = "created_at", order = "desc", category) => {
       )
       .then(({ rows }) => {
         if (rows.length === 0) {
-          return Promise.reject({ code: 404, msg: "category not found" });
+          return Promise.reject({ code: 404, msg: "reviews not found" });
         }
         return rows;
       });
