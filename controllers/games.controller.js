@@ -57,5 +57,11 @@ exports.postReviewCommentById = (req, res, next) => {
     .then((comment) => {
       res.status(200).send({ comment });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.code === "23503") {
+        res.status(400).send({ msg: "invalid username" });
+      } else if (err.code === "23502") {
+        res.status(400).send({ msg: "bad request" });
+      } else next(err);
+    });
 };
