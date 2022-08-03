@@ -4,15 +4,50 @@ exports.selectCategories = () => {
   return db.query("SELECT * FROM categories;").then(({ rows }) => rows);
 };
 
-exports.selectReviews = () => {
-  return db
-    .query(
-      `SELECT title, reviews.review_id, review_img_url, reviews.votes, category, reviews.owner, reviews.created_at, designer,
+exports.selectReviews = (sortBy = "created_at", order = "desc", category) => {
+  const allowedSorters = [
+    "title",
+    "review_id",
+    "review_img_url",
+    "votes",
+    "category",
+    "owner",
+    "created_at",
+    "designer",
+    "comment_count",
+  ];
+  const allowedOrder = ["desc", "asc"];
+
+  if (category) {
+    return db
+      .query(
+        `SELECT title, reviews.review_id, review_img_url, reviews.votes, category, reviews.owner, reviews.created_at, designer,
       COUNT(comment_id) AS comment_count FROM reviews 
       LEFT JOIN comments ON comments.review_id = reviews.review_id
-      GROUP BY reviews.review_id`
-    )
-    .then(({ rows }) => rows);
+      GROUP BY reviews.review_id HAVING category = $1
+      ORDER BY ${sortBy} ${order};`,
+        [category]
+      )
+      .then(({ rows }) => {
+        if (rows.length === 0) {
+          return Promise.reject({ code: 404, msg: "category not found" });
+        }
+        return rows;
+      });
+  } else {
+    if (allowedSorters.includes(sortBy) && allowedOrder.includes(order)) {
+      return db
+        .query(
+          `SELECT title, reviews.review_id, review_img_url, reviews.votes, category, reviews.owner, reviews.created_at, designer,
+      COUNT(comment_id) AS comment_count FROM reviews 
+      LEFT JOIN comments ON comments.review_id = reviews.review_id
+      GROUP BY reviews.review_id ORDER BY ${sortBy} ${order};`
+        )
+        .then(({ rows }) => rows);
+    } else {
+      return Promise.reject({ code: 400, msg: "bad request" });
+    }
+  }
 };
 
 exports.selectReviewById = (reviewId) => {
