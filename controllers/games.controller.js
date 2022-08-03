@@ -5,6 +5,7 @@ const {
   changeReviewById,
   selectCommentsByReviewId,
   addReviewCommentById,
+  removeCommentById,
 } = require("../models/games.model");
 
 exports.getCategories = (req, res) => {
@@ -14,9 +15,15 @@ exports.getCategories = (req, res) => {
 };
 
 exports.getReviews = (req, res, next) => {
-  selectReviews().then((reviews) => {
-    res.status(200).send({ reviews });
-  });
+  const sortBy = req.query.sort_by;
+  const order = req.query.order;
+  const category = req.query.category;
+
+  selectReviews(sortBy, order, category)
+    .then((reviews) => {
+      res.status(200).send({ reviews });
+    })
+    .catch(next);
 };
 
 exports.getReviewById = (req, res, next) => {
@@ -64,4 +71,13 @@ exports.postReviewCommentById = (req, res, next) => {
         res.status(400).send({ msg: "bad request" });
       } else next(err);
     });
+};
+
+exports.deleteCommentById = (req, res, next) => {
+  const commentId = req.params.comment_id;
+  removeCommentById(commentId)
+    .then(() => {
+      res.status(200).send();
+    })
+    .catch(next);
 };

@@ -6,6 +6,7 @@ const {
   getReviews,
   getReviewByCommentId,
   postReviewCommentById,
+  deleteCommentById,
 } = require("./controllers/games.controller");
 const { getUsers } = require("./controllers/user.controllers");
 
@@ -19,6 +20,7 @@ app.get("/api/reviews/:review_id/comments", getReviewByCommentId);
 
 app.patch("/api/reviews/:review_id", patchReviewById);
 app.post("/api/reviews/:review_id/comments", postReviewCommentById);
+app.delete("/api/comments/:comment_id", deleteCommentById);
 
 app.get("/api/users", getUsers);
 
