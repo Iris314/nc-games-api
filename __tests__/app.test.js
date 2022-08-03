@@ -233,6 +233,95 @@ describe("/api/reviews/:review_id/comments", () => {
         });
     });
   });
+  describe("POST", () => {
+    const comment = {
+      username: "dav3rid",
+      body: "This is a test comment.",
+    };
+    const returnedComment = {
+      author: "dav3rid",
+      body: "This is a test comment.",
+      comment_id: 7,
+      created_at: expect.any(String),
+      review_id: 2,
+      votes: 0,
+    };
+    test("POST /api/reviews/:review_id/comments results in status 200 with the comment object", () => {
+      return request(app)
+        .post("/api/reviews/2/comments")
+        .send(comment)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comment).toEqual(returnedComment);
+        });
+    });
+    test("POST /api/reviews/:review_id/comments stores the new comment", () => {
+      return request(app)
+        .post("/api/reviews/2/comments")
+        .send(comment)
+        .expect(200)
+        .then(() => {
+          return request(app)
+            .get("/api/reviews/2/comments")
+            .expect(200)
+            .then(({ body: { comments } }) => expect(comments.length).toBe(4));
+        });
+    });
+    test("non-existing review id results in status 404 - msg 'review not found", () => {
+      return request(app)
+        .post("/api/reviews/1000/comments")
+        .send(comment)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("review not found");
+        });
+    });
+    test("non-numeric review id results in status 400 - msg 'bad request", () => {
+      return request(app)
+        .post("/api/reviews/review1/comments")
+        .send(comment)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("bad request");
+        });
+    });
+    test('invalid post username results in status 400 - msg "invalid username"', () => {
+      const invalidComment = {
+        username: "invalidUsername",
+        body: "This is a test comment.",
+      };
+      return request(app)
+        .post("/api/reviews/2/comments")
+        .send(invalidComment)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("invalid username");
+        });
+    });
+    test('invalid post body results in status 400 - msg "bad request"', () => {
+      const invalidComment = {
+        username: "dav3rid",
+        body: null,
+      };
+      return request(app)
+        .post("/api/reviews/2/comments")
+        .send(invalidComment)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("bad request");
+        });
+    });
+    test('empty post object results in status 400 - msg "bad request"', () => {
+      const invalidComment = {};
+      return request(app)
+        .post("/api/reviews/2/comments")
+        .send(invalidComment)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("bad request");
+        });
+    });
+  });
 });
 
 describe("/api/reviews", () => {

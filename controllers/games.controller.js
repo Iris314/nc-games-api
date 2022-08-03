@@ -4,6 +4,7 @@ const {
   selectReviewById,
   changeReviewById,
   selectCommentsByReviewId,
+  addReviewCommentById,
 } = require("../models/games.model");
 
 exports.getCategories = (req, res) => {
@@ -44,4 +45,23 @@ exports.patchReviewById = (req, res, next) => {
       res.status(200).send({ review });
     })
     .catch(next);
+};
+
+exports.postReviewCommentById = (req, res, next) => {
+  const reviewId = req.params.review_id;
+  const comment = {
+    username: req.body.username,
+    body: req.body.body,
+  };
+  addReviewCommentById(reviewId, comment)
+    .then((comment) => {
+      res.status(200).send({ comment });
+    })
+    .catch((err) => {
+      if (err.code === "23503") {
+        res.status(400).send({ msg: "invalid username" });
+      } else if (err.code === "23502") {
+        res.status(400).send({ msg: "bad request" });
+      } else next(err);
+    });
 };

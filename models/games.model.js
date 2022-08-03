@@ -63,3 +63,22 @@ exports.changeReviewById = (reviewId, votes) => {
       .then(({ rows }) => rows[0]);
   }
 };
+
+exports.addReviewCommentById = (review_id, comment) => {
+  return db
+    .query("SELECT * FROM reviews WHERE review_id = $1", [review_id])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ code: 404, msg: "review not found" });
+      } else {
+        return db
+          .query(
+            `INSERT INTO comments (body, author, review_id) VALUES ($1, $2, $3) RETURNING*`,
+            [comment.body, comment.username, review_id]
+          )
+          .then(({ rows }) => {
+            return rows[0];
+          });
+      }
+    });
+};
