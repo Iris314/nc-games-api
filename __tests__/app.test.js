@@ -460,13 +460,13 @@ describe("/api/comments/:comment_id", () => {
       return request(app)
         .delete("/api/comments/1000")
         .expect(404)
-        .then(({ body }) => expect(body.msg).toBe("comment not found"));
+        .then(({ body: { msg } }) => expect(msg).toBe("comment not found"));
     });
     test("returns status 400 with msg bad request for invalid comment id", () => {
       return request(app)
         .delete("/api/comments/invalid")
         .expect(400)
-        .then(({ body }) => expect(body.msg).toBe("bad request"));
+        .then(({ body: { msg } }) => expect(msg).toBe("bad request"));
     });
   });
 });
@@ -488,5 +488,32 @@ describe("/api/users", () => {
           );
         });
       });
+  });
+});
+
+describe("/api/users/:user_id", () => {
+  describe("GET", () => {
+    test("returns status 200 and user object on response body", () => {
+      const expected = {
+        username: "mallionaire",
+        name: "haz",
+        avatar_url:
+          "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+      };
+      return request(app)
+        .get("/api/users/mallionaire")
+        .expect(200)
+        .then(({ body: { user } }) => {
+          expect(user).toEqual(expected);
+        });
+    });
+    test("returns status 404 with msg user not found for non existing user", () => {
+      return request(app)
+        .get("/api/users/validusername")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("user not found");
+        });
+    });
   });
 });

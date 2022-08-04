@@ -11,7 +11,7 @@ const {
 apiRouter.get("/", getApi);
 apiRouter.use("/reviews", reviewRouter);
 apiRouter.use("/comments", commentRouter);
-apiRouter.use("/users", userRouter);
 apiRouter.use("/categories", categoryRouter);
+apiRouter.use("/users", userRouter);
 
 module.exports = apiRouter;
