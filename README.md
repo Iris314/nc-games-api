@@ -4,7 +4,7 @@
 
 The aim of this project is to build an API for the purpose of accessing application data programmatically. The intention here is to mimic the building of a real world backend service which should provide this information to the front end architecture.
 
-This database is setup using PostgreSQL, and interactions to the database are trough [node-postgres](https://node-postgres.com/).
+This database is setup using PostgreSQL, and interactions to the database are through [node-postgres](https://node-postgres.com/).
 
 The hosted version can be found on [this](https://boardgames-nc.herokuapp.com/api) webpage.
 
