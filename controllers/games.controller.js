@@ -6,11 +6,14 @@ const {
   selectCommentsByReviewId,
   addReviewCommentById,
   removeCommentById,
+  selectApi,
 } = require("../models/games.model");
-const endpoints = require("../endpoints.json");
 
 exports.getApi = (req, res) => {
-  res.status(200).send({ endpoints });
+  selectApi().then((endpoints) => {
+    const parsedEndpoints = JSON.parse(endpoints);
+    res.status(200).send({ endpoints: parsedEndpoints });
+  });
 };
 
 exports.getCategories = (req, res) => {
