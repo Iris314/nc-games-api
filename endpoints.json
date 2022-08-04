@@ -119,5 +119,14 @@
         "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
       }
     ]
+  },
+  "GET /api/users/:username": {
+    "description": "serves a specified user object",
+    "queries": [],
+    "exampleResponse": {
+      "username": "bainesface",
+      "name": "sarah",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+    }
   }
 }
