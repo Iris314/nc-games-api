@@ -5,6 +5,7 @@ const {
   changeReviewById,
   selectCommentsByReviewId,
   addReviewCommentById,
+  removeCommentById,
 } = require("../models/games.model");
 
 exports.getCategories = (req, res) => {
@@ -70,4 +71,13 @@ exports.postReviewCommentById = (req, res, next) => {
         res.status(400).send({ msg: "bad request" });
       } else next(err);
     });
+};
+
+exports.deleteCommentById = (req, res, next) => {
+  const commentId = req.params.comment_id;
+  removeCommentById(commentId)
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch(next);
 };

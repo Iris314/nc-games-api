@@ -423,28 +423,37 @@ describe("/api/reviews/:review_id/comments", () => {
   });
 });
 
-describe("/api/reviews", () => {
-  test("GET /api/reviews results in status 200 with array of review objects", () => {
-    return request(app)
-      .get("/api/reviews")
-      .expect(200)
-      .then(({ body: { reviews } }) => {
-        expect(reviews.length).toBe(13);
-        reviews.forEach((review) => {
-          expect(review).toEqual(
-            expect.objectContaining({
-              owner: expect.any(String),
-              title: expect.any(String),
-              review_id: expect.any(Number),
-              category: expect.any(String),
-              review_img_url: expect.any(String),
-              created_at: expect.any(String),
-              votes: expect.any(Number),
-              designer: expect.any(String),
-              comment_count: expect.any(String),
-            })
-          );
+describe("/api/comments/:comment_id", () => {
+  describe("DELETE ", () => {
+    test("returns status 204 with empty response body", () => {
+      return request(app)
+        .delete("/api/comments/1")
+        .expect(204)
+        .then(({ body }) => expect(body).toEqual({}));
+    });
+    test("deletes the comment from the review", () => {
+      return request(app)
+        .delete("/api/comments/1")
+        .then(() => {
+          return request(app)
+            .get("/api/reviews/2")
+            .expect(200)
+            .then(({ body: { review } }) =>
+              expect(review.comment_count).toBe("2")
+            );
         });
-      });
+    });
+    test("returns status 404 with msg comment not found for non existing comment", () => {
+      return request(app)
+        .delete("/api/comments/1000")
+        .expect(404)
+        .then(({ body }) => expect(body.msg).toBe("comment not found"));
+    });
+    test("returns status 400 with msg bad request for invalid comment id", () => {
+      return request(app)
+        .delete("/api/comments/invalid")
+        .expect(400)
+        .then(({ body }) => expect(body.msg).toBe("bad request"));
+    });
   });
 });
