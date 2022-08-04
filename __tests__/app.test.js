@@ -360,7 +360,7 @@ describe("/api/reviews/:review_id/comments", () => {
       return request(app)
         .post("/api/reviews/2/comments")
         .send(comment)
-        .expect(200)
+        .expect(201)
         .then(({ body: { comment } }) => {
           expect(comment).toEqual(returnedComment);
         });
@@ -369,7 +369,7 @@ describe("/api/reviews/:review_id/comments", () => {
       return request(app)
         .post("/api/reviews/2/comments")
         .send(comment)
-        .expect(200)
+        .expect(201)
         .then(() => {
           return request(app)
             .get("/api/reviews/2/comments")
