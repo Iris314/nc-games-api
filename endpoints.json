@@ -21,14 +21,103 @@
       "reviews": [
         {
           "title": "One Night Ultimate Werewolf",
+          "review_id": 8,
           "designer": "Akihisa Okui",
           "owner": "happyamy2016",
           "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-          "category": "hidden-roles",
+          "category": "social deduction",
           "created_at": 1610964101251,
-          "votes": 5
+          "votes": 5,
+          "comment_count": 0
         }
       ]
     }
+  },
+  "GET /api/reviews/:review_id": {
+    "description": "serves the specified review object",
+    "queries": [],
+    "exampleResponse": {
+      "review": {
+        "title": "One Night Ultimate Werewolf",
+        "review_id": 8,
+        "review_body": "We couldn't find the werewolf!",
+        "designer": "Akihisa Okui",
+        "owner": "happyamy2016",
+        "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+        "category": "social deduction",
+        "created_at": 1610964101251,
+        "votes": 5,
+        "comment_count": 0
+      }
+    }
+  },
+  "GET /api/reviews/:review_id/comments": {
+    "description": "serves an array of comments associated with the specified review-id",
+    "queries": [],
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 1,
+          "body": "I loved this game too!",
+          "review_id": 2,
+          "author": "bainesface",
+          "votes": 16,
+          "created_at": 1511354613389
+        }
+      ]
+    }
+  },
+  "PATCH /api/reviews/:review_id": {
+    "description": "increments the votes of a specified review and serves the patched review",
+    "queries": [],
+    "body": {
+      "inc_votes": 1
+    },
+    "exampleResponse": {
+      "review": {
+        "title": "One Night Ultimate Werewolf",
+        "review_id": 8,
+        "review_body": "We couldn't find the werewolf!",
+        "designer": "Akihisa Okui",
+        "owner": "happyamy2016",
+        "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+        "category": "social deduction",
+        "created_at": 1610964101251,
+        "votes": 6,
+        "comment_count": 0
+      }
+    }
+  },
+  "POST /api/reviews/:review_id/comments": {
+    "description": "adds a comment to a specified review and serves the posted comment",
+    "queries": [],
+    "body": {
+      "username": "dav3rid",
+      "body": "This is a test comment."
+    },
+    "exampleResponse": {
+      "author": "dav3rid",
+      "body": "This is a test comment.",
+      "comment_id": 7,
+      "created_at": 1610964101251,
+      "review_id": 2,
+      "votes": 0
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes a specified comment",
+    "queries": [],
+    "exampleResponse": {}
+  },
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "queries": [],
+    "exampleResponse": [
+      {
+        "username": "bainesface",
+        "name": "sarah",
+        "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+      }
+    ]
   }
 }

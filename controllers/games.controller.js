@@ -7,6 +7,11 @@ const {
   addReviewCommentById,
   removeCommentById,
 } = require("../models/games.model");
+const endpoints = require("../endpoints.json");
+
+exports.getApi = (req, res) => {
+  res.status(200).send({ endpoints });
+};
 
 exports.getCategories = (req, res) => {
   selectCategories().then((categories) => {
@@ -35,7 +40,7 @@ exports.getReviewById = (req, res, next) => {
     .catch(next);
 };
 
-exports.getReviewByCommentId = (req, res, next) => {
+exports.getCommentsByReviewId = (req, res, next) => {
   const reviewId = req.params.review_id;
   selectCommentsByReviewId(reviewId)
     .then((comments) => {
@@ -60,6 +65,7 @@ exports.postReviewCommentById = (req, res, next) => {
     username: req.body.username,
     body: req.body.body,
   };
+
   addReviewCommentById(reviewId, comment)
     .then((comment) => {
       res.status(200).send({ comment });
