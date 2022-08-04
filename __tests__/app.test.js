@@ -23,6 +23,19 @@ describe("/api/non-existing-route", () => {
   });
 });
 
+describe("/api", () => {
+  test("/api responds with status 200 with a json object of endpoints", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body: { endpoints } }) => {
+        expect(endpoints["GET /api"].description).toBe(
+          "serves up a json representation of all the available endpoints of the api"
+        );
+      });
+  });
+});
+
 describe("/api/categories", () => {
   describe("GET", () => {
     test("status 200 - responds with an array of category objects", () => {
@@ -364,7 +377,7 @@ describe("/api/reviews/:review_id/comments", () => {
             .then(({ body: { comments } }) => expect(comments.length).toBe(4));
         });
     });
-    describe("POST errors", () => {
+    describe("errors", () => {
       test("non-existing review id results in status 404 - msg 'review not found", () => {
         return request(app)
           .post("/api/reviews/1000/comments")
@@ -455,5 +468,25 @@ describe("/api/comments/:comment_id", () => {
         .expect(400)
         .then(({ body }) => expect(body.msg).toBe("bad request"));
     });
+  });
+});
+
+describe("/api/users", () => {
+  test("GET /api/users responds with an array of users", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body: { users } }) => {
+        expect(users.length).toBe(4);
+        users.forEach((user) => {
+          expect(user).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            })
+          );
+        });
+      });
   });
 });
