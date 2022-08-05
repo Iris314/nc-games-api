@@ -109,6 +109,19 @@
     "queries": [],
     "exampleResponse": {}
   },
+  "PATCH /api/comments/:comment_id": {
+    "description": "increments the votes of a specified comment and serves the patched comment",
+    "queries": [],
+    "body": { "inc_votes": 1 },
+    "exampleResponse": {
+      "body": "I loved this game too!",
+      "comment_id": 1,
+      "votes": 20,
+      "author": "bainesface",
+      "review_id": 2,
+      "created_at": 1610964101251
+    }
+  },
   "GET /api/users": {
     "description": "serves an array of all users",
     "queries": [],
