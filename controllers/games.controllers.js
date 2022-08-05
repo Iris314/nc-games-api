@@ -8,6 +8,7 @@ const {
   removeCommentById,
   selectApi,
   changeCommentById,
+  addReview,
 } = require("../models/games.model");
 
 exports.getApi = (req, res) => {
@@ -33,6 +34,17 @@ exports.getReviews = (req, res, next) => {
       res.status(200).send({ reviews });
     })
     .catch(next);
+};
+
+exports.postReview = (req, res, next) => {
+  const review = req.body;
+  addReview(review)
+    .then((review) => res.status(201).send({ review }))
+    .catch((err) => {
+      if (err.code === "23503" || err.code === "23502") {
+        res.status(400).send({ msg: "bad request" });
+      } else next(err);
+    });
 };
 
 exports.getReviewById = (req, res, next) => {

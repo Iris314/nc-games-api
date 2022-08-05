@@ -61,123 +61,203 @@ describe("/api/categories", () => {
 });
 
 describe("/api/reviews", () => {
-  test("GET /api/reviews results in status 200 with array of review objects", () => {
-    return request(app)
-      .get("/api/reviews")
-      .expect(200)
-      .then(({ body: { reviews } }) => {
-        expect(reviews.length).toBe(13);
-        reviews.forEach((review) => {
-          expect(review).toEqual(
-            expect.objectContaining({
-              owner: expect.any(String),
-              title: expect.any(String),
-              review_id: expect.any(Number),
-              category: expect.any(String),
-              review_img_url: expect.any(String),
-              created_at: expect.any(String),
-              votes: expect.any(Number),
-              designer: expect.any(String),
-              comment_count: expect.any(String),
-            })
-          );
-        });
-      });
-  });
-  test("reviews are by defauilt sorted in descending order", () => {
-    return request(app)
-      .get("/api/reviews")
-      .expect(200)
-      .then(({ body: { reviews } }) => {
-        expect(reviews).toBeSorted({ descending: true });
-      });
-  });
-  describe("queries", () => {
-    test("reviews are by sorted in ascending order when queried", () => {
-      return request(app)
-        .get("/api/reviews?order=asc")
-        .expect(200)
-        .then(({ body: { reviews } }) => {
-          expect(reviews).toBeSorted({ descending: false });
-        });
-    });
-    test("reviews are by ordered by date by default", () => {
+  describe("GET", () => {
+    test("GET /api/reviews results in status 200 with array of review objects", () => {
       return request(app)
         .get("/api/reviews")
         .expect(200)
         .then(({ body: { reviews } }) => {
-          expect(reviews).toBeSorted({ descending: true, key: "created_at" });
+          expect(reviews.length).toBe(13);
+          reviews.forEach((review) => {
+            expect(review).toEqual(
+              expect.objectContaining({
+                owner: expect.any(String),
+                title: expect.any(String),
+                review_id: expect.any(Number),
+                category: expect.any(String),
+                review_img_url: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                designer: expect.any(String),
+                comment_count: expect.any(String),
+              })
+            );
+          });
         });
     });
-    test("reviews are ordered by title when queried", () => {
+    test("reviews are by defauilt sorted in descending order", () => {
       return request(app)
-        .get("/api/reviews?sort_by=title")
+        .get("/api/reviews")
         .expect(200)
         .then(({ body: { reviews } }) => {
-          expect(reviews).toBeSorted({ descending: true, key: "title" });
+          expect(reviews).toBeSorted({ descending: true });
         });
     });
-    test("reviews are ordered by title ascendingly when queried", () => {
-      return request(app)
-        .get("/api/reviews?sort_by=title&order=asc")
-        .expect(200)
-        .then(({ body: { reviews } }) => {
-          expect(reviews).toBeSorted({ descending: false, key: "title" });
-        });
+    describe("queries", () => {
+      test("reviews are by sorted in ascending order when queried", () => {
+        return request(app)
+          .get("/api/reviews?order=asc")
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            expect(reviews).toBeSorted({ descending: false });
+          });
+      });
+      test("reviews are by ordered by date by default", () => {
+        return request(app)
+          .get("/api/reviews")
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            expect(reviews).toBeSorted({ descending: true, key: "created_at" });
+          });
+      });
+      test("reviews are ordered by title when queried", () => {
+        return request(app)
+          .get("/api/reviews?sort_by=title")
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            expect(reviews).toBeSorted({ descending: true, key: "title" });
+          });
+      });
+      test("reviews are ordered by title ascendingly when queried", () => {
+        return request(app)
+          .get("/api/reviews?sort_by=title&order=asc")
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            expect(reviews).toBeSorted({ descending: false, key: "title" });
+          });
+      });
+      test("reviews are filterd by category dexterity when queried", () => {
+        const expected = {
+          title: "Jenga",
+          designer: "Leslie Scott",
+          owner: "philippaclaire9",
+          review_id: 2,
+          review_img_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          category: "dexterity",
+          votes: 5,
+          comment_count: "3",
+          created_at: "2021-01-18T10:01:41.251Z",
+        };
+        return request(app)
+          .get("/api/reviews?category=dexterity")
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            expect(reviews.length).toBe(1);
+            expect(reviews[0]).toEqual(expected);
+          });
+      });
     });
-    test("reviews are filterd by category dexterity when queried", () => {
-      const expected = {
-        title: "Jenga",
-        designer: "Leslie Scott",
-        owner: "philippaclaire9",
-        review_id: 2,
-        review_img_url:
-          "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
-        category: "dexterity",
-        votes: 5,
-        comment_count: "3",
-        created_at: "2021-01-18T10:01:41.251Z",
-      };
-      return request(app)
-        .get("/api/reviews?category=dexterity")
-        .expect(200)
-        .then(({ body: { reviews } }) => {
-          expect(reviews.length).toBe(1);
-          expect(reviews[0]).toEqual(expected);
-        });
+    describe("errors", () => {
+      test("invalid order results in code 400 - msg: bad request", () => {
+        return request(app)
+          .get("/api/reviews?order=invalid")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("bad request");
+          });
+      });
+      test("invalid sorter results in code 400 - msg: bad request", () => {
+        return request(app)
+          .get("/api/reviews?sort_by=invalid")
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("bad request");
+          });
+      });
+      test("invalid category results in code 404 - msg: reviews not found", () => {
+        return request(app)
+          .get("/api/reviews?category=invalid")
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("reviews not found");
+          });
+      });
+      test("a valid category with no associated reviews results in 404- msg: reviews not found ", () => {
+        return request(app)
+          .get("/api/reviews?category=children%27s%20games")
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("reviews not found");
+          });
+      });
     });
   });
-  describe("errors", () => {
-    test("invalid order results in code 400 - msg: bad request", () => {
+  describe("POST", () => {
+    const review = {
+      owner: "mallionaire",
+      title: "testReview",
+      review_body: "This is a test review",
+      designer: "TestDesigner",
+      category: "dexterity",
+    };
+    const expected = {
+      review_id: 14,
+      votes: 0,
+      created_at: expect.any(String),
+      comment_count: 0,
+    };
+    test("valid post results in status 200 - returns posted review", () => {
       return request(app)
-        .get("/api/reviews?order=invalid")
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("bad request");
+        .post("/api/reviews")
+        .send(review)
+        .expect(201)
+        .then(({ body: { review } }) => expect(review).toEqual(expected));
+    });
+    test("stores the posted review", () => {
+      return request(app)
+        .post("/api/reviews")
+        .send(review)
+        .expect(201)
+        .then(() => {
+          return request(app)
+            .get("/api/reviews")
+            .expect(200)
+            .then(({ body: { reviews } }) => expect(reviews.length).toBe(14));
         });
     });
-    test("invalid sorter results in code 400 - msg: bad request", () => {
+    test("invalid username results in status 400 - msg: 'bad request'", () => {
+      const invalidReview1 = {
+        owner: "invalid",
+        title: "testReview",
+        review_body: "This is a test review",
+        designer: "TestDesigner",
+        category: "dexterity",
+      };
       return request(app)
-        .get("/api/reviews?sort_by=invalid")
+        .post("/api/reviews")
+        .send(invalidReview1)
         .expect(400)
         .then(({ body: { msg } }) => {
           expect(msg).toBe("bad request");
         });
     });
-    test("invalid category results in code 404 - msg: reviews not found", () => {
+    test("invalid category results in status 400 - msg: 'bad request'", () => {
+      const invalidReview2 = {
+        owner: "mallionaire",
+        title: "testReview",
+        review_body: "This is a test review",
+        designer: "TestDesigner",
+        category: "invalid",
+      };
       return request(app)
-        .get("/api/reviews?category=invalid")
-        .expect(404)
+        .post("/api/reviews")
+        .send(invalidReview2)
+        .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe("reviews not found");
+          expect(msg).toBe("bad request");
         });
     });
-    test("a valid category with no associated reviews results in 404- msg: reviews not found ", () => {
+    test("invalid post body results in status 400 - msg: 'bad request", () => {
+      const invalidReview3 = {
+        invalid: "invalid",
+      };
       return request(app)
-        .get("/api/reviews?category=children%27s%20games")
-        .expect(404)
+        .post("/api/reviews")
+        .send(invalidReview3)
+        .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe("reviews not found");
+          expect(msg).toBe("bad request");
         });
     });
   });
@@ -354,7 +434,7 @@ describe("/api/reviews/:review_id/comments", () => {
       review_id: 2,
       votes: 0,
     };
-    test("POST /api/reviews/:review_id/comments results in status 200 with the comment object", () => {
+    test("valid comment results in status 200 with the comment object", () => {
       return request(app)
         .post("/api/reviews/2/comments")
         .send(comment)
@@ -363,7 +443,7 @@ describe("/api/reviews/:review_id/comments", () => {
           expect(comment).toEqual(returnedComment);
         });
     });
-    test("POST /api/reviews/:review_id/comments stores the new comment", () => {
+    test(" stores the new comment", () => {
       return request(app)
         .post("/api/reviews/2/comments")
         .send(comment)

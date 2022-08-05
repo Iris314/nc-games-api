@@ -4,11 +4,12 @@ const {
   getCommentsByReviewId,
   patchReviewById,
   postReviewCommentById,
+  postReview,
 } = require("../controllers/games.controllers");
 
 const reviewRouter = require("express").Router();
 
-reviewRouter.get("/", getReviews);
+reviewRouter.route("/").get(getReviews).post(postReview);
 
 reviewRouter.route("/:review_id").get(getReviewById).patch(patchReviewById);
 

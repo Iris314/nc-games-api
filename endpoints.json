@@ -33,6 +33,23 @@
       ]
     }
   },
+  "POST /api/reviews": {
+    "description": "adds a review and serves the posted review",
+    "queries": [],
+    "body": {
+      "owner": "mallionaire",
+      "title": "testReview",
+      "review_body": "This is a test review",
+      "designer": "TestDesigner",
+      "category": "dexterity"
+    },
+    "exampleResponse": {
+      "review_id": 14,
+      "votes": 0,
+      "created_at": 1610964101251,
+      "comment_count": 0
+    }
+  },
   "GET /api/reviews/:review_id": {
     "description": "serves the specified review object",
     "queries": [],

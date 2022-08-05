@@ -55,6 +55,28 @@ exports.selectReviews = (sortBy = "created_at", order = "desc", category) => {
   }
 };
 
+exports.addReview = (review) => {
+  return db
+    .query(
+      `INSERT INTO reviews (owner, title, review_body, designer, category) 
+    VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [
+        review.owner,
+        review.title,
+        review.review_body,
+        review.designer,
+        review.category,
+      ]
+    )
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ code: 400, msg: "bad request" });
+      }
+      const { review_id, votes, created_at } = rows[0];
+      return { review_id, votes, created_at, comment_count: 0 };
+    });
+};
+
 exports.selectReviewById = (reviewId) => {
   return db
     .query(
