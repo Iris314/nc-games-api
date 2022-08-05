@@ -1,4 +1,4 @@
-const { getCategories } = require("../controllers/games.controller");
+const { getCategories } = require("../controllers/games.controllers");
 
 const categoryRouter = require("express").Router();
 

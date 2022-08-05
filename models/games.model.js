@@ -132,3 +132,23 @@ exports.removeCommentById = (commentId) => {
       }
     });
 };
+
+exports.changeCommentById = (commentId, votes) => {
+  if (votes) {
+    return db
+      .query(
+        `UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING*`,
+        [votes, commentId]
+      )
+      .then(({ rows }) => {
+        if (rows.length === 0) {
+          return Promise.reject({ code: 404, msg: "comment not found" });
+        }
+        return rows[0];
+      });
+  } else {
+    return db
+      .query(`SELECT * FROM comments WHERE comment_id = $1`, [commentId])
+      .then(({ rows }) => rows[0]);
+  }
+};

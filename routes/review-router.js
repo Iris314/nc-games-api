@@ -4,7 +4,7 @@ const {
   getCommentsByReviewId,
   patchReviewById,
   postReviewCommentById,
-} = require("../controllers/games.controller");
+} = require("../controllers/games.controllers");
 
 const reviewRouter = require("express").Router();
 

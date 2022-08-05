@@ -1,5 +1,5 @@
 const apiRouter = require("express").Router();
-const { getApi } = require("../controllers/games.controller");
+const { getApi } = require("../controllers/games.controllers");
 
 const {
   categoryRouter,

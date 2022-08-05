@@ -224,9 +224,7 @@ describe("/api/reviews/:review_id", () => {
     });
   });
   describe("PATCH", () => {
-    const update = {
-      inc_votes: 4,
-    };
+    const update = { inc_votes: 4 };
     test("existing review id results in status 200 - responds with the updated correct review object", () => {
       const expected = {
         title: "Agricola",
@@ -467,6 +465,62 @@ describe("/api/comments/:comment_id", () => {
         .delete("/api/comments/invalid")
         .expect(400)
         .then(({ body: { msg } }) => expect(msg).toBe("bad request"));
+    });
+  });
+  describe("PATCH", () => {
+    const update = { inc_votes: 4 };
+    test("existing comment_id returns status 200 with updated comment object", () => {
+      const expected = {
+        body: "I loved this game too!",
+        comment_id: 1,
+        votes: 20,
+        author: "bainesface",
+        review_id: 2,
+        created_at: "2017-11-22T12:43:33.389Z",
+      };
+      return request(app)
+        .patch("/api/comments/1")
+        .send(update)
+        .expect(200)
+        .then(({ body: { comment } }) => expect(comment).toEqual(expected));
+    });
+    test("non-existing comment id results in status 404 - msg 'comment not found'", () => {
+      return request(app)
+        .patch("/api/comments/1000")
+        .send(update)
+        .expect(404)
+        .then(({ body: { msg } }) => expect(msg).toBe("comment not found"));
+    });
+    test("non-numeric review id results in status 400 - msg: 'bad request'", () => {
+      return request(app)
+        .patch("/api/comments/invalid")
+        .send(update)
+        .expect(400)
+        .then(({ body: { msg } }) => expect(msg).toBe("bad request"));
+    });
+    test("non-numeric vote results in status 400 - msg 'bad request'", () => {
+      const wrongUpdate1 = { inc_votes: "invalid" };
+      return request(app)
+        .patch("/api/comments/1")
+        .send(wrongUpdate1)
+        .expect(400)
+        .then(({ body: { msg } }) => expect(msg).toBe("bad request"));
+    });
+    test("invalid request key returns status 200 with unchanged comment object ", () => {
+      const expected = {
+        body: "I loved this game too!",
+        comment_id: 1,
+        votes: 16,
+        author: "bainesface",
+        review_id: 2,
+        created_at: "2017-11-22T12:43:33.389Z",
+      };
+      const wrongUpdate2 = { invalid: 4 };
+      return request(app)
+        .patch("/api/comments/1")
+        .send(wrongUpdate2)
+        .expect(200)
+        .then(({ body: { comment } }) => expect(comment).toEqual(expected));
     });
   });
 });

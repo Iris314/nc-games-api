@@ -7,6 +7,7 @@ const {
   addReviewCommentById,
   removeCommentById,
   selectApi,
+  changeCommentById,
 } = require("../models/games.model");
 
 exports.getApi = (req, res) => {
@@ -87,6 +88,16 @@ exports.deleteCommentById = (req, res, next) => {
   removeCommentById(commentId)
     .then(() => {
       res.status(204).send();
+    })
+    .catch(next);
+};
+
+exports.patchCommentById = (req, res, next) => {
+  const reviewId = req.params.comment_id;
+  const vote = req.body.inc_votes;
+  changeCommentById(reviewId, vote)
+    .then((comment) => {
+      res.status(200).send({ comment });
     })
     .catch(next);
 };
