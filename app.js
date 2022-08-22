@@ -4,9 +4,9 @@ const cors = require("cors");
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 app.use("/api", apiRouter);
-app.use(cors());
 
 app.all("*", (req, res) => {
   res.status(404).send({ msg: "URL path not found" });
