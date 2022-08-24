@@ -132,6 +132,8 @@ exports.addReviewCommentById = (review_id, comment) => {
     .then(({ rows }) => {
       if (rows.length === 0) {
         return Promise.reject({ code: 404, msg: "review not found" });
+      } else if (comment.body === "") {
+        return Promise.reject({ code: 400, msg: "body can not be empty" });
       } else {
         return db
           .query(

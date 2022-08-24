@@ -487,17 +487,17 @@ describe("/api/reviews/:review_id/comments", () => {
             expect(msg).toEqual("invalid username");
           });
       });
-      test('invalid post body results in status 400 - msg "bad request"', () => {
+      test('invalid post body results in status 400 - msg "body can not be empty"', () => {
         const invalidComment = {
           username: "dav3rid",
-          body: null,
+          body: "",
         };
         return request(app)
           .post("/api/reviews/2/comments")
           .send(invalidComment)
           .expect(400)
           .then(({ body: { msg } }) => {
-            expect(msg).toEqual("bad request");
+            expect(msg).toEqual("body can not be empty");
           });
       });
       test('empty post object results in status 400 - msg "bad request"', () => {
