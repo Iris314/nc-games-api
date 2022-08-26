@@ -10,14 +10,14 @@ The hosted version can be found on [this](https://boardgames-nc.herokuapp.com/ap
 
 ## Instructions
 
-Minimum reccommended versions are `v10.17.0` for Node.js and `v10` for PostgreSQL
+Minimum reccommended versions are `v18` for Node.js and `v10` for PostgreSQL
 
 ### Installation
 
 The following command will clone the project to a local machine:
 
 ```
-git clone https://github.com/Iris314/nc-games.git
+git clone https://github.com/Iris314/nc-games-api.git
 ```
 
 The needed dependencies can be installed using:
