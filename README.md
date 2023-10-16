@@ -6,8 +6,6 @@ The aim of this project is to build an API for the purpose of accessing applicat
 
 This database is setup using PostgreSQL, and interactions to the database are through [node-postgres](https://node-postgres.com/).
 
-The hosted version can be found on [this](https://nervous-windbreaker-wasp.cyclic.app/api) webpage.
-
 ## Instructions
 
 Minimum reccommended versions are `v18` for Node.js and `v10` for PostgreSQL
